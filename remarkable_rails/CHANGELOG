@@ -1,3 +1,5 @@
+* Added have_action matcher (thanks to Diego Carrion) [#81]
+
 * mock_models now creates a second class method to be used on the index action [#71]
   In other words, mock_models :project will create:
 

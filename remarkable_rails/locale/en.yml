@@ -13,6 +13,21 @@ en:
         optionals:
           with_kind_of:
             positive: "with kind of {{value}}"
+            
+      have_before_filter:
+        description: "{{name}}"
+        expectations:
+          has_before_filter: "controller to {{name}}"
+        optionals:
+          except:
+            positive: "except on {{inspect}}"
+          only:
+            positive: "only on {{inspect}}"
+            
+      have_actions:
+        description: "respond to {{params}}"
+        expectations:
+          has_action: "controller to respond to {{param}}"
 
       filter_params:
         description: "filter {{params}} parameters from log"

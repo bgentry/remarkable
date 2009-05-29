@@ -14,15 +14,19 @@ en:
           with_kind_of:
             positive: "with kind of {{value}}"
 
-      have_before_filter:
-        description: "{{name}}"
+      have_filter:
+        after: after
+        before: before
+        description: "{{human_name}} {{macro}}"
         expectations:
-          has_before_filter: "controller to {{name}}"
+          has_filter: "controller to have {{macro}} filter {{name}}"
+          only_matches: "controller to have {{macro}} filter {{name}} on {{only}}, got {{actual}}"
+          except_matches: "controller to except {{macro}} filter {{name}} on {{except}}, got {{actual}}"
         optionals:
           except:
-            positive: "except on {{inspect}}"
+            positive: "all action except {{sentence}}"
           only:
-            positive: "only on {{inspect}}"
+            positive: "{{sentence}} actions"
 
       have_actions:
         description: "respond to {{actions}}"

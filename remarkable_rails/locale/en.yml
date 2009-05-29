@@ -20,12 +20,10 @@ en:
         description: "{{human_name}} {{macro}}"
         expectations:
           has_filter: "controller to have {{macro}} filter {{name}}"
-          only_matches: "controller to have {{macro}} filter {{name}} on {{only}}, got {{actual}}"
-          except_matches: "controller to except {{macro}} filter {{name}} on {{except}}, got {{actual}}"
+          only: "controller to have {{macro}} filter {{name}} on action {{action}}, got only on {{actual}}"
+          except: "controller to have {{macro}} filter {{name}} on action {{action}}, got all except {{actual}}"
         optionals:
-          except:
-            positive: "all action except {{sentence}}"
-          only:
+          "on":
             positive: "{{sentence}} actions"
 
       have_actions:

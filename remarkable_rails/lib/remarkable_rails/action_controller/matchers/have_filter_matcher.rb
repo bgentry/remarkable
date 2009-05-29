@@ -5,12 +5,11 @@ module Remarkable
       class HaveFilterMatcher < Remarkable::Base #:nodoc:
         arguments :type, :name
 
-        optionals :except, :only, :splat => true
-        assertions :has_filter?, :only_matches?, :except_matches?
+        optionals :on, :splat => true
+        assertions :has_filter?, :only?, :except?
 
         before_assert do
-          @options[:only]   = [*@options[:only]].compact
-          @options[:except] = [*@options[:except]].compact
+          @options[:on] = [*@options[:on]].compact
         end
 
         protected
@@ -20,32 +19,38 @@ module Remarkable
             !@filter.nil?
           end
 
-          def only_matches?
-            match(:only)
+          def only?
+            return true if @options[:on].empty? || only_actions.empty?
+
+            @options[:on].each do |action|
+              next if only_actions.include?(action.to_sym)
+              return false, :actual => only_actions.inspect, :action => action.to_sym.inspect
+            end
+            true
           end
 
-          def except_matches?
-            match(:except)
+          def except?
+            return true if @options[:on].empty? || except_actions.empty?
+
+            @options[:on].each do |action|
+              next unless except_actions.include?(action.to_sym)
+              return false, :actual => except_actions.inspect, :action => action.to_sym.inspect
+            end
+            true
           end
 
         private
 
-          def filter
-            subject_class.filter_chain.select { |f| f.method == @name.to_sym && f.type == @type }.first
+          def only_actions
+            @only_actions ||= @filter.options[:only].to_a.map{ |a| a.to_sym }
           end
 
-          def match(key)
-            return true if @options[key].empty?
+          def except_actions
+            @except_actions ||= @filter.options[:except].to_a.map{ |a| a.to_sym }
+          end
 
-            actual = @filter.options[key].to_a
-            actual.sort!
-            actual.map!{ |a| a.to_sym }
-
-            @options[key].map!{ |a| a.to_s }
-            @options[key].sort!
-            @options[key].map!{ |a| a.to_sym }
-
-            return actual == @options[key], :actual => actual.inspect
+          def filter
+            subject_class.filter_chain.select { |f| f.method == @name.to_sym && f.type == @type }.first
           end
 
           def interpolation_options
@@ -57,20 +62,46 @@ module Remarkable
 
       end
 
-      # Checks if the controller has a filter.
+      # Checks if the controller has a before filter.
+      #
+      # == Options
+      #
+      # * <tt>on</tt> - the actions that perform the filter. In the negate form
+      #                 represents actions that should not perform the filter.
       #
       # == Examples
       #
       #   should_have_before_filter :login_required
-      #   should_have_before_filter :login_required, :except => :edit
-      #   should_have_before_filter :login_required, :only => [:edit, :create]
+      #   should_have_before_filter :login_required, :on => :edit
+      #   should_have_before_filter :login_required, :on => [:edit, :create]
       #
       #   it { should have_before_filter :login_required }
-      #   it { should have_before_filter :login_required, :except => :edit }
-      #   it { should have_before_filter :login_required, :only => [:edit, :create] }      
+      #   it { should have_before_filter :login_required, :on => :edit }
+      #   it { should have_before_filter :login_required, :on => [:edit, :create] }
       #
       def have_before_filter(*args, &block)
         HaveFilterMatcher.new(:before, *args, &block).spec(self)
+      end
+
+      # Checks if the controller has an after filter.
+      #
+      # == Options
+      #
+      # * <tt>on</tt> - the actions that perform the filter. In the negate form
+      #                 represents actions that should not perform the filter.
+      #
+      # == Examples
+      #
+      #   should_have_after_filter :process_content
+      #   should_have_after_filter :process_content, :on => :edit
+      #   should_have_after_filter :process_content, :on => [:edit, :create]
+      #
+      #   it { should have_after_filter :process_content }
+      #   it { should have_after_filter :process_content, :on => :edit }
+      #   it { should have_after_filter :process_content, :on => [:edit, :create] }
+      #
+      def have_after_filter(*args, &block)
+        HaveFilterMatcher.new(:after, *args, &block).spec(self)
       end
 
     end

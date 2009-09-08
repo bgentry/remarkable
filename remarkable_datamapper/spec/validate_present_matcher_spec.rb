@@ -19,7 +19,7 @@ describe 'validate_presence_of' do
       @matcher.description.should == 'require title and size to be set'
     end
 
-    it 'should set allow_nil? message' do
+    it 'should set nullable? message' do
       @matcher = validate_present(:category)
       @matcher.matches?(@model)
       @matcher.failure_message.should == 'Expected Product to require category to be set'
@@ -57,11 +57,11 @@ describe 'validate_presence_of' do
 
     describe 'with has many' do
       def define_and_validate(validation)
-        define_model :stocks, :id => DataMapper::Types::Serial, :product_id => Integer
+        define_model :stock, :id => DataMapper::Types::Serial, :product_id => Integer
 
         define_model :product, :id => DataMapper::Types::Serial do
           has n, :stocks
-          validates_present :stocks if validation
+          #validates_present :stocks if validation  # TODO: Translate to DM
         end
 
         validate_present :stocks

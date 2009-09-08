@@ -25,7 +25,7 @@ require 'dm-validations'
 gem 'svenfuchs-i18n'
 require 'i18n'
 
-require 'pp'  # DEBUG ONLY
+require 'pp'  # TODO: DEBUG ONLY
 
 ENV['SQLITE3_SPEC_URI'] ||= 'sqlite3::memory:'
 ENV['ADAPTER'] = 'sqlite3'
